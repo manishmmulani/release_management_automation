@@ -1,0 +1,16 @@
+cd release_management_automation/
+python3 -m venv virtual
+source virtual/bin/activate
+python --version
+pip --version
+python -m pip install --upgrade pip
+python -m pip install python-gitlab
+python -m pip install pandas
+python -m pip install tabulate
+deactivate
+cd virtual/lib64/python3.7/site-packages/
+zip -r ../../../../lambda.zip .
+cd ~/work/python/release_management_automation/
+zip -r9 lambda.zip gitlab_intg/
+zip -g lambda.zip lambda_function.py workflow.py 
+aws lambda update-function-code --function-name gitlabAPIIntegration --zip-file fileb://lambda.zip
