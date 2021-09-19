@@ -145,16 +145,19 @@ class MergeReleaseOperations:
         print(f"Pipeline with id {new_pipeline.id} successfully created")
 
         new_ppl_job_list = list(filter(lambda job: job.name == 'deploy-prod', new_pipeline.jobs.list()))
+
+        job = None
         if(len(new_ppl_job_list) > 0):
             new_ppl_job = new_ppl_job_list[0]
             print(f"Triggering job with id {new_ppl_job.id}")
 
             job = self.project.jobs.get(new_ppl_job.id, lazy=True)
             job.play()
-            return True
 
-        print("Matching job could not be found. Not triggering the job")
-        return False
+        return {"pipeline_id" : new_pipeline.id,
+                "job_id" : None if job is None else job.id,
+                "job_url" : None if job is None else job.web_url,
+                "job_created" : job is not None}
 
     def perform_mr_operations(self, operations, MAX_ITERATIONS=10, wait_time_sec=3):
         if 'A' in operations:
@@ -176,10 +179,14 @@ class MergeReleaseOperations:
                 if result == False:
                     time.sleep(wait_time_sec)
 
-                
+        pipeline_result = None
         if result and 'T' in operations:
-            self.trigger_pipeline()
+            pipeline_result = self.trigger_pipeline()
 
-        return result
+        return {
+            'APPROVAL_STATUS' : self.approvals.get_approval_status(),
+            'MERGE_STATUS' : self.mr.state,
+            'PIPELINE_STATUS' : pipeline_result
+        }
 
 

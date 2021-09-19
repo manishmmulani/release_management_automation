@@ -10,11 +10,12 @@ from slack I should hit lambda endpoint with mr_id and get release details
 [DONE] format the output on slack 
 [DONE] slack workflow updates on merge/trigger pipeline steps 
 [DONE] commit to repo
-slack workflow builder on release channel to get pipeline status 
-(with link to job), and job completion
-deploy script for lambda deployment / update
-15 min lambda limitation - find alternative
+[DONE] deploy script for lambda deployment / update
+slack workflow builder on release channel to get approval/merge/pipeline status with link to job
+new lambda for polling job completion status
+15 min lambda limitation - find alternative --- workflow_lambda to republish request, counter to SNS topic 
 read private token from secrets
+ability to link pipeline on the MR
 
 cd approval
 python -m venv venv 
@@ -54,3 +55,18 @@ aws lambda update-function-code --function-name gitlabAPIIntegration --zip-file 
 
 Created a SNS topic "release_approval_sns"
 
+
+
+perform_operations return type 
+    {
+     approval_status : RM/PM/RM_PM,
+     merge_status : merged/pending,
+     pipeline_status : None or 
+        {
+            pipeline_id : 12345,
+            job_id : 455666,
+            job_created: True,
+            job_url : "https://....job/17889644"}
+        },
+     }
+     
