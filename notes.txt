@@ -1,0 +1,56 @@
+
+
+from slack I should hit lambda endpoint with mr_id and get release details
+
+
+[DONE] current script - set it up in venv with all dependencies 
+[DONE] Add lambda function on aws that can accept input from slack and return back to slack
+[DONE] Deploy lambda function with dependencies
+[DONE] Asynchronously return result to slack response_url from lambda - created two lambdas and an SNS topic
+[DONE] format the output on slack 
+[DONE] slack workflow updates on merge/trigger pipeline steps 
+commit to repo
+slack workflow builder on release channel to get pipeline status 
+(with link to job), and job completion
+deploy script for lambda deployment / update
+15 min lambda limitation - find alternative
+read private token from secrets
+
+cd approval
+python -m venv venv 
+.\venv\Scripts\activate
+
+(venv) approval> python -m pip install python-gitlab
+(venv) approval> python -m pip install pandas
+(venv) approval> python -m pip install tabulate
+(venv) approval> python workflow.py 
+(venv) approval> deactivate
+approval> cd venv\Lib\site-packages
+
+W:\python\arc\approval> 7z.exe a lambda.zip .\lambda_function.py .\workflow.py .\gitlab_intg .\venv\Lib\site-packages\*
+W:\python\arc\approval> aws lambda update-function-code --function-name gitlabAPIIntegration --zip-file fileb://lambda.zip
+
+
+
+
+from linux 
+
+source virtual/bin/activate
+python -m pip install --upgrade pip
+python -m pip install python-gitlab
+python -m pip install pandas
+python -m pip install tabulate
+deactivate
+
+cd virtual/lib64/python3.7/site-packages
+zip -r ../../../../lambda.zip .
+cd ~/work/python/approvals
+zip -r9 lambda.zip gitlab_intg
+zip -g lambda.zip lambda_function.py workflow.py
+
+aws lambda update-function-code --function-name gitlabAPIIntegration --zip-file fileb://lambda.zip
+
+
+
+Created a SNS topic "release_approval_sns"
+
