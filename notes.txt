@@ -9,7 +9,7 @@ from slack I should hit lambda endpoint with mr_id and get release details
 [DONE] Asynchronously return result to slack response_url from lambda - created two lambdas and an SNS topic
 [DONE] format the output on slack 
 [DONE] slack workflow updates on merge/trigger pipeline steps 
-commit to repo
+[DONE] commit to repo
 slack workflow builder on release channel to get pipeline status 
 (with link to job), and job completion
 deploy script for lambda deployment / update
