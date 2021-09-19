@@ -1,5 +1,6 @@
 import json
 import workflow as wf
+import os
 
 def lambda_handler(event, context):
     print(json.dumps(event))
@@ -12,7 +13,14 @@ def lambda_handler(event, context):
 
     result = "Hello from Lambda!!"
 
-    wf.run(cmd=params[1], mr_id=int(params[2]), response_url=response_url)
+    workflow_status_webhook = os.environ.get("workflow_status_webhook")
+    if workflow_status_webhook is None:
+        workflow_status_webhook = response_url
+
+    wf.run(cmd=params[1], \
+            mr_id=int(params[2]), \
+            response_url=response_url, \
+            workflow_status_webhook=workflow_status_webhook)
 
     return {
         'statusCode': 200,
