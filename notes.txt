@@ -11,8 +11,8 @@ from slack I should hit lambda endpoint with mr_id and get release details
 [DONE] slack workflow updates on merge/trigger pipeline steps 
 [DONE] commit to repo
 [DONE] deploy script for lambda deployment / update
-slack workflow builder on release channel to get approval/merge/pipeline status with link to job
-new lambda for polling job completion status
+[DONE] slack workflow builder on release channel to get approval/merge/pipeline status with link to job
+[DONE] new lambda for polling job completion status
 15 min lambda limitation - find alternative --- workflow_lambda to republish request, counter to SNS topic 
 read private token from secrets
 ability to link pipeline on the MR
