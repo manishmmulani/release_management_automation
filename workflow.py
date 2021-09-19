@@ -20,7 +20,7 @@ def approval_merge_pipeline_summary(mr_id, result):
         else:
             pipeline_summary = f"Job creation failed for pipeline {pipeline_status['pipeline_id']}"
 
-    summary_builder = f"MR : {mr_id}"
+    summary_builder = f"MR : {mr_id}\n"
     summary_builder = summary_builder + f"Approval Status : {result['APPROVAL_STATUS']}\n"
     summary_builder = summary_builder + f"Merge Status : {result['MERGE_STATUS']}\n"
     summary_builder = summary_builder + f"Pipeline Status : {pipeline_summary}"
