@@ -9,7 +9,7 @@ def get_project_id(project):
                     }
     return project_dict[project]
 
-def approval_merge_pipeline_summary(result):
+def approval_merge_pipeline_summary(mr_id, result):
 
     pipeline_status = result['PIPELINE_STATUS']
     pipeline_summary = 'N/A'
@@ -20,11 +20,10 @@ def approval_merge_pipeline_summary(result):
         else:
             pipeline_summary = f"Job creation failed for pipeline {pipeline_status['pipeline_id']}"
 
-    summary_builder = "```"
+    summary_builder = f"MR : {mr_id}"
     summary_builder = summary_builder + f"Approval Status : {result['APPROVAL_STATUS']}\n"
     summary_builder = summary_builder + f"Merge Status : {result['MERGE_STATUS']}\n"
     summary_builder = summary_builder + f"Pipeline Status : {pipeline_summary}"
-    summary_builder = summary_builder + "```"
 
     return summary_builder
 
@@ -64,7 +63,7 @@ def run(cmd, mr_id, response_url=None, workflow_status_webhook=None):
         mr_operations = MergeReleaseOperations(project, mr_id, user)
         op = [c for c in cmd.upper()]
         result = mr_operations.perform_mr_operations(operations=op, MAX_ITERATIONS=14, wait_time_sec=60)
-        summary = approval_merge_pipeline_summary(result)
+        summary = approval_merge_pipeline_summary(mr_id, result)
         notify(summary=summary, url=workflow_status_webhook)
 
     else:
