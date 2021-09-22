@@ -156,7 +156,7 @@ class MergeReleaseOperations:
 
         return {"pipeline_id" : new_pipeline.id,
                 "job_id" : None if job is None else job.id,
-                "job_url" : None if job is None else job.web_url,
+                "job_url" : None if job is None else f"https://gitlab.com/arcesium/private/trinity/change-management/-/jobs/{job.id}",
                 "job_created" : job is not None}
 
     def perform_mr_operations(self, operations, MAX_ITERATIONS=10, wait_time_sec=3):
