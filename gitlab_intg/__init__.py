@@ -112,12 +112,13 @@ class ReleaseNotes:
 
 
 class MergeReleaseOperations:
-    def __init__(self, project, mr_id, rm_user):
+    def __init__(self, project, mr_id, rm_user, gitlab_job_base_url):
         self.project = project
         self.mr = project.mergerequests.get(mr_id)
         self.mr_id = mr_id
         self.approvals = Approvals(project, mr_id)
         self.rm_user = rm_user
+        self.gitlab_job_base_url = gitlab_job_base_url
 
     def approve_mr(self):
         if self.rm_user in self.approvals.get_approvers():
@@ -156,7 +157,7 @@ class MergeReleaseOperations:
 
         return {"pipeline_id" : new_pipeline.id,
                 "job_id" : None if job is None else job.id,
-                "job_url" : None if job is None else f"https://gitlab.com/arcesium/private/trinity/change-management/-/jobs/{job.id}",
+                "job_url" : None if job is None else f"{self.gitlab_job_base_url}/{job.id}",
                 "job_created" : job is not None}
 
     def perform_mr_operations(self, operations, MAX_ITERATIONS=10, wait_time_sec=3):

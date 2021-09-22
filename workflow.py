@@ -60,7 +60,8 @@ def run(cmd, mr_id, response_url=None, workflow_status_webhook=None):
         notify(summary=summary, url=response_url)
     
     elif cmd == "am" or cmd == "amt":
-        mr_operations = MergeReleaseOperations(project, mr_id, user)
+        gitlab_job_base_url = os.environ.get('gitlab_job_base_url')
+        mr_operations = MergeReleaseOperations(project, mr_id, user, gitlab_job_base_url)
         op = [c for c in cmd.upper()]
         result = mr_operations.perform_mr_operations(operations=op, MAX_ITERATIONS=14, wait_time_sec=60)
         summary = approval_merge_pipeline_summary(mr_id, result)
