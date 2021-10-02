@@ -87,8 +87,14 @@ class ReleaseNotes:
     def get_branch_name(self, version):
         if version == 'N/A':
             return 'N/A'
+
         commit = self.engine_project.commits.get(version)
-        return 'N/A' if commit is None else commit.last_pipeline['ref']
+        if commit is None:
+            return 'N/A'
+
+        release_refs = list(map(lambda r: r['name'], filter(lambda ref: 'release/' in ref['name'], commit.refs())))
+
+        return release_refs[0] if len(release_refs) > 0 else commit.last_pipeline['ref']
 
     def get_release_summary(self):
         summary_builder = ""
