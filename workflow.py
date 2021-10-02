@@ -53,6 +53,7 @@ def run(cmd, mr_id, response_url=None, workflow_status_webhook=None):
     engine_project = g.projects.get(id=get_project_id('secondary_gitlab_project_id'))
 
     summary = f"Unsupported command {cmd}"
+    result = None
 
     if cmd == "grn":
         release_notes = ReleaseNotes(project, mr_id, engine_project)
@@ -71,7 +72,7 @@ def run(cmd, mr_id, response_url=None, workflow_status_webhook=None):
         notify(summary=summary, url=response_url)
 
     print("Returning Summary")
-    return summary
+    return {"summary" : summary, "result" : result}
 
 if __name__ == '__main__':
     #result = run("grn", 797)

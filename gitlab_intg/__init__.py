@@ -104,10 +104,10 @@ class ReleaseNotes:
         grouped_df = df.groupby(['Env', 'Action', 'New Version', 'New Version Branch', 'Current Version', 'Current Version Branch'])
         result_df = pd.DataFrame(grouped_df.size().reset_index(name='Group Count'))
 
-        summary_builder = summary_builder + "```" + tabulate(result_df) + "```" + "\n\n"
-
         summary_builder = summary_builder + "```" + self.get_commit_diffs() + "```"
         summary_builder = summary_builder + separator
+
+        summary_builder = summary_builder + "```" + tabulate(result_df) + "```" + "\n\n"
 
         approvals = Approvals(self.project, self.mr_id)
         summary_builder = summary_builder + "```" + approvals.get_approval_status() + "\n"
