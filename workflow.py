@@ -4,10 +4,8 @@ import requests
 import os
 
 def get_project_id(project):
-    project_dict = {"main_gitlab_project_id" : os.environ.get('main_gitlab_project_id'),
-                    "secondary_gitlab_project_id" : os.environ.get('secondary_gitlab_project_id')
-                    }
-    return project_dict[project]
+    project_dict = {"secondary_gitlab_project_id" : os.environ.get('secondary_gitlab_project_id')}
+    return project_dict[project] if project in project_dict else os.environ.get(project)
 
 def approval_merge_pipeline_summary(mr_id, result):
 
@@ -41,9 +39,10 @@ def notify(summary, url):
 # response_url is the slack webhook to post back the response (to the channel where the request originated)
 # workflow_status_webhook could be different for response_url, as approval/merge/pipeline status needs to be published there
 
-def run(cmd, mr_id, response_url=None, workflow_status_webhook=None):
-    print(f"Workflow is being run {mr_id} {response_url}")
-    project_id = get_project_id("main_gitlab_project_id")
+def run(cmd, mr_id, response_url=None, workflow_status_webhook=None, project_alias=None):
+    print(f"Workflow is being run {mr_id} {response_url} {project_alias}")
+
+    project_id = get_project_id(project_alias)
 
     private_token = os.environ.get('gitlab_private_token')
     user = os.environ.get('gitlab_rm_user')

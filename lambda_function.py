@@ -22,7 +22,8 @@ def lambda_handler(event, context):
     run_output = wf.run(cmd=params[1], \
                         mr_id=int(params[2]), \
                         response_url=response_url, \
-                        workflow_status_webhook=workflow_status_webhook)
+                        workflow_status_webhook=workflow_status_webhook,
+                        project_alias=params[0])
 
     if retry_count is not None and retry_count <= 5 and run_output is not None and 'result' in run_output:
         print("Approve Merge Pipeline operation result found")
