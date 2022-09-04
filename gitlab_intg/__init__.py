@@ -12,9 +12,10 @@ class Approvals:
         approval_rule_mgr = self.project.approvalrules
 
         rules = {}
-        for rule in approval_rule_mgr.list():
-            if len(rule.eligible_approvers) > 0:
-                rules[rule.name] = list(map(lambda approver : approver['username'], rule.eligible_approvers))
+        if approval_rule_mgr is not None:
+            for rule in approval_rule_mgr.list():
+                if len(rule.eligible_approvers) > 0:
+                    rules[rule.name] = list(map(lambda approver : approver['username'], rule.eligible_approvers))
         return rules
 
     def get_approvers(self):
@@ -26,8 +27,8 @@ class Approvals:
         approved_by = self.get_approvers()
         approval_rules = self.get_approval_rules()
 
-        is_rm_approved = any(approver in approval_rules['RM'] for approver in approved_by)
-        is_pm_approved = any(approver in approval_rules['PM'] for approver in approved_by)
+        is_rm_approved = 'RM' not in approval_rules or any(approver in approval_rules['RM'] for approver in approved_by)
+        is_pm_approved = 'PM' not in approval_rules or any(approver in approval_rules['PM'] for approver in approved_by)
 
         if is_rm_approved and is_pm_approved:
             return 'RM_PM_APPROVED'
