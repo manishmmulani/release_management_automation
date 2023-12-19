@@ -59,7 +59,7 @@ def run(cmd, mr_id, response_url=None, workflow_status_webhook=None, project_ali
         summary = release_notes.get_release_summary()
         notify(summary=summary, url=response_url)
     
-    elif cmd == "am" or cmd == "amt":
+    elif cmd == "am" or cmd == "amt" or cmd == 'amf' or cmd == 'amtf':
         gitlab_job_base_url = os.environ.get('gitlab_job_base_url')
         mr_operations = MergeReleaseOperations(project, mr_id, user, gitlab_job_base_url)
         op = [c for c in cmd.upper()]

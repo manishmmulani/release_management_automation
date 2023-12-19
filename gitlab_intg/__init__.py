@@ -148,24 +148,35 @@ class MergeReleaseOperations:
         # cannot_be_merged
         return False
 
-    def trigger_pipeline(self):
+    # T => trigger only 'deploy-prod' job
+    # F => trigger only 'deploy-wpf-prod' job
+    # T,F => trigger both the jobs
+    def trigger_pipeline(self, job_aliases=['T']):
+        job_name_to_alias_map = {'deploy-prod' : 'T', 'deploy-wpf-prod' : 'F'}
+        job_filter_fn = lambda job_name : job_name in job_name_to_alias_map and job_name_to_alias_map[job_name] in job_aliases
+
         new_pipeline = self.project.pipelines.create({'ref': 'main'})
         print(f"Pipeline with id {new_pipeline.id} successfully created")
 
-        new_ppl_job_list = list(filter(lambda job: job.name == 'deploy-prod', new_pipeline.jobs.list()))
+        new_ppl_job_list = list(filter(lambda job: job_filter_fn(job.name), new_pipeline.jobs.list()))
 
         job = None
+        job_ids = []
+        job_urls = []
         if(len(new_ppl_job_list) > 0):
-            new_ppl_job = new_ppl_job_list[0]
-            print(f"Triggering job with id {new_ppl_job.id}")
+            for new_ppl_job in new_ppl_job_list:
 
-            job = self.project.jobs.get(new_ppl_job.id, lazy=True)
-            job.play()
+                print(f"Triggering job with id {new_ppl_job.id}")
+
+                job = self.project.jobs.get(new_ppl_job.id, lazy=True)
+                job.play()
+                job_ids.append(job.id)
+                job_urls.append(f"{self.gitlab_job_base_url}/{job.id}")
 
         return {"pipeline_id" : new_pipeline.id,
-                "job_id" : None if job is None else job.id,
-                "job_url" : None if job is None else f"{self.gitlab_job_base_url}/{job.id}",
-                "job_created" : job is not None}
+                "job_id" : str(job_ids),
+                "job_url" : str(job_urls),
+                "job_created" : len(job_ids) > 0}
 
     def perform_mr_operations(self, operations, MAX_ITERATIONS=10, wait_time_sec=3):
         if 'A' in operations:
@@ -185,11 +196,14 @@ class MergeReleaseOperations:
                     result = self.merge_mr()
 
                 if result == False:
+                    print("Waiting till update_mr pipeline is complete and MR is ready to be merged")
                     time.sleep(wait_time_sec)
 
         pipeline_result = None
-        if result and 'T' in operations:
-            pipeline_result = self.trigger_pipeline()
+        if result and ('T' in operations or 'F' in operations):
+            # Note operations is a subset of ['A', 'M', 'T', 'F']
+            # 'T' and 'F' is all that matters to trigger_pipeline
+            pipeline_result = self.trigger_pipeline(job_aliases=operations)
 
         return {
             'APPROVAL_STATUS' : self.approvals.get_approval_status(),
