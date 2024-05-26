@@ -43,13 +43,17 @@ python -m pip install pandas
 python -m pip install tabulate
 deactivate
 
-cd virtual/lib64/python3.7/site-packages
+
+cd virtual311/lib64/python3.11/site-packages
 zip -r ../../../../lambda.zip .
-cd ~/work/python/approvals
+cd ~/python/release_management_automation
 zip -r9 lambda.zip gitlab_intg
 zip -g lambda.zip lambda_function.py workflow.py
 
-aws lambda update-function-code --function-name gitlabAPIIntegration --zip-file fileb://lambda.zip
+#aws lambda update-function-code --function-name gitlabAPIIntegration --zip-file fileb://lambda.zip
+aws s3 cp lambda.zip s3://tdev-sandbox/gitlab_release_management/
+aws lambda update-function-code --function-name gitlabAPIIntegration --s3-bucket tdev-sandbox --s3-key gitlab_release_management/lambda.zip
+
 
 
 
